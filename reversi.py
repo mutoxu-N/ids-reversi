@@ -61,6 +61,31 @@ class Board:
         """
         return self.__board.copy()
 
+    def print(self, stone: int = 0) -> None:
+        """
+
+        Args:
+            stone: stone がおける場所を赤く表示 (0 で非表示)
+
+        """
+        board: np.ndarray = self.__board
+        c = self.get_can_place(stone)
+
+        r = ""
+        for y in range(self.size):
+            for x in range(self.size):
+                if stone != 0 and (x, y) in c:
+                    r += "🔴"
+                else:
+                    if board[y][x] == 1:
+                        r += "⚫"
+                    elif board[y][x] == 2:
+                        r += "⚪"
+                    else:
+                        r += "🟩"
+            r += "\n"
+        print(r)
+
     def count(self, stone: int):
         """
 
@@ -266,6 +291,15 @@ class Board:
                     r[y][x] = 1
         return r
 
+    def top_stone(self) -> int:
+        """
+
+        Returns: 一番数が多い石の種類
+
+        """
+        if self.count(1) < self.count(2): return 2
+        else: return 1
+
 
 class Reversi:
     """
@@ -341,23 +375,7 @@ class Reversi:
             num: 何番目の盤面を print するか
 
         """
-        b: Board = self.get_board(num)
-        c = b.get_can_place(stone)
-
-        r = ""
-        for y in range(self.SIZE):
-            for x in range(self.SIZE):
-                if stone != 0 and (x, y) in c:
-                    r += "🔴"
-                else:
-                    if b.board[y][x] == 1:
-                        r += "⚫"
-                    elif b.board[y][x] == 2:
-                        r += "⚪"
-                    else:
-                        r += "🟩"
-            r += "\n"
-        print(r)
+        self.__board_histories[num].print(stone)
 
     def place(self, stone, x, y) -> None:
         """
@@ -416,3 +434,13 @@ class Reversi:
 
         """
         return self.get_board(num).count(stone)
+
+    def result(self) -> tuple:
+        """
+
+        Returns: 対戦結果 (ゲームが終了したか, 勝った石)
+
+        """
+        if self.state != Reversi.State.FINISHED: return False, None
+
+        return True,

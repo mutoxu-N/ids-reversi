@@ -60,8 +60,8 @@ def main_2():
     r.print(0)
 
 
-def main_3():
-    np.random.seed(30)
+def main_3(s):
+    np.random.seed(s)
 
     b = default_board()
     r = Reversi(Board(b))
@@ -98,4 +98,4 @@ def main_3():
 
 
 if __name__ == '__main__':
-    main_3()
+    main_3(15)
