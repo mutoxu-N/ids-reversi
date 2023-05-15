@@ -2,6 +2,7 @@ from reversi import Reversi, Board, default_board
 import numpy as np
 import random
 
+
 def main_1():
     b = np.array([
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -21,6 +22,7 @@ def main_1():
     r.place(1, 2, 6)
     r.print(1)
     print(r.now_board.get_stone_position(1))
+
 
 def main_2():
     np.random.seed(20)
@@ -57,6 +59,7 @@ def main_2():
     r.place(stone, p[0], p[1])
 
     r.print(0)
+
 
 if __name__ == '__main__':
     main_2()
