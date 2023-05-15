@@ -62,23 +62,18 @@ def main_2():
 
 def main_3(s):
     np.random.seed(s)
-
-    b = default_board()
-    r = Reversi(Board(b))
+    r = Reversi(Board(default_board()))
 
     stone = 1
     # r.print(stone)
 
     while r.state == Reversi.State.IN_GAME:
 
+        # 置ける場所の候補
         candidate = r.get_can_place(stone)
         # print(f"placeable: {candidate}")
 
-        if len(candidate) == 0:
-            if stone == 1: black_pass = True
-            else: white_pass = True
-
-        else:
+        if len(candidate) > 0:
             p = candidate[np.random.randint(len(candidate), size=1)[0]]
             # print(f"place: {stone} at {p}")
 
