@@ -1,4 +1,5 @@
 import numpy as np
+from enum import Enum
 
 
 def default_board() -> np.ndarray:
@@ -33,7 +34,7 @@ class Board:
         s = board.shape
         if s[0] != s[1]:
             assert f"盤面が正方形ではありません。 size: {s}"
-
+        self.__size = s[0]
         self.__board = board.copy()
 
     def __str__(self) -> str:
@@ -49,7 +50,7 @@ class Board:
         Returns: 盤面の一辺の大きさ
 
         """
-        return len(self.board)
+        return self.__size
 
     @property
     def board(self) -> np.ndarray:
@@ -59,6 +60,17 @@ class Board:
 
         """
         return self.__board.copy()
+
+    def count(self, stone: int):
+        """
+
+        Args:
+            stone: 石の種類
+
+        Returns: 現在の石の数
+
+        """
+        return np.count_nonzero(self.board == stone)
 
     def get_can_place(self, stone: int = 0) -> tuple:
         """
@@ -116,123 +128,125 @@ class Board:
         Returns: (x, y) に dir の方向 何マス設置できるか
 
         """
+        board = self.__board
+
         # 石が置いてあったらおけない
-        if self.board[y][x] != 0: return 0
+        if board[y][x] != 0: return 0
 
         # N
         if direction == 0:
-            if y < 2 or self.board[y - 1][x] in (0, stone): return 0
+            if y < 2 or board[y - 1][x] in (0, stone): return 0
 
             i, j = x, y - 2
             while j >= 0:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     j -= 1
                 else:
                     break
 
-            if j < 0 or self.board[j][i] == 0: return 0
+            if j < 0 or board[j][i] == 0: return 0
             return y - j
 
         # NE
         elif direction == 1:
-            if self.size - 3 < x or y < 2 or self.board[y - 1][x + 1] in (0, stone): return 0
+            if self.size - 3 < x or y < 2 or board[y - 1][x + 1] in (0, stone): return 0
 
             i, j = x + 2, y - 2
             while i < self.size and j >= 0:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     i += 1
                     j -= 1
                 else:
                     break
 
-            if self.size <= i or j < 0 or self.board[j][i] == 0: return 0
+            if self.size <= i or j < 0 or board[j][i] == 0: return 0
             return i - x
 
         # E
         elif direction == 2:
-            if self.size - 3 < x or self.board[y][x + 1] in (0, stone): return 0
+            if self.size - 3 < x or board[y][x + 1] in (0, stone): return 0
 
             i, j = x + 1, y
             while i < self.size:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     i += 1
                 else:
                     break
 
-            if self.size <= i or self.board[j][i] == 0: return 0
+            if self.size <= i or board[j][i] == 0: return 0
             return i - x
 
         # SE
         elif direction == 3:
-            if self.size - 3 < x or self.size - 3 < y or self.board[y + 1][x + 1] in (0, stone): return 0
+            if self.size - 3 < x or self.size - 3 < y or board[y + 1][x + 1] in (0, stone): return 0
 
             i, j = x + 2, y + 2
             while i < self.size and j < self.size:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     i += 1
                     j += 1
                 else:
                     break
 
-            if self.size <= i or self.size <= j or self.board[j][i] == 0: return 0
+            if self.size <= i or self.size <= j or board[j][i] == 0: return 0
             return i - x
 
         # S
         if direction == 4:
-            if self.size - 3 < y or self.board[y + 1][x] in (0, stone): return 0
+            if self.size - 3 < y or board[y + 1][x] in (0, stone): return 0
 
             i, j = x, y + 2
             while j < self.size:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     j += 1
                 else:
                     break
 
-            if self.size <= j or self.board[j][i] == 0: return 0
+            if self.size <= j or board[j][i] == 0: return 0
             return j - y
 
         # SW
         elif direction == 5:
-            if x < 2 or self.size - 3 < y or self.board[y + 1][x - 1] in (0, stone): return 0
+            if x < 2 or self.size - 3 < y or board[y + 1][x - 1] in (0, stone): return 0
 
             i, j = x - 2, y + 2
             while 0 <= i and j < self.size:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     i -= 1
                     j += 1
                 else:
                     break
 
-            if i < 0 or self.size <= j or self.board[j][i] == 0: return 0
+            if i < 0 or self.size <= j or board[j][i] == 0: return 0
             return x - i
 
         # W
         if direction == 6:
-            if x < 2 or self.board[y][x - 1] in (0, stone): return 0
+            if x < 2 or board[y][x - 1] in (0, stone): return 0
 
             i, j = x - 2, y
             while i >= 0:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     i -= 1
                 else:
                     break
 
-            if i < 0 or self.board[j][i] == 0: return 0
+            if i < 0 or board[j][i] == 0: return 0
             return x - i
 
         # NW
         elif direction == 7:
-            if x < 2 or y < 2 or self.board[y - 1][x - 1] in (0, stone): return 0
+            if x < 2 or y < 2 or board[y - 1][x - 1] in (0, stone): return 0
 
             i, j = x - 2, y - 2
             while 0 <= i and 0 <= j:
-                if self.board[j][i] not in (0, stone):
+                if board[j][i] not in (0, stone):
                     i -= 1
                     j -= 1
                 else:
                     break
 
-            if i < 0 or j < 0 or self.board[j][i] == 0: return 0
+            if i < 0 or j < 0 or board[j][i] == 0: return 0
             return x - i
 
         return 0
@@ -245,12 +259,10 @@ class Board:
 
         Returns: 指定された石がある場所を1, それ以外を0とする配列
         """
-
-        b: np.ndarray = self.board
-        r = np.zeros(b.shape)
+        r = np.zeros(self.__board.shape)
         for y in range(self.size):
             for x in range(self.size):
-                if self.board[y][x] == stone:
+                if self.__board[y][x] == stone:
                     r[y][x] = 1
         return r
 
@@ -260,6 +272,10 @@ class Reversi:
     リバーシ用インターフェース
     1ゲームを管理
     """
+
+    class State(Enum):
+        IN_GAME = 0
+        FINISHED = 1
 
     def __init__(self, board: Board = default_board()):
         """
@@ -272,6 +288,7 @@ class Reversi:
         self.SIZE = board.size
         self.__board_histories = []
         self.playing = 1
+        self.state: Reversi.State = Reversi.State.IN_GAME
 
         # create new game
         self.__board_histories.append(board)
@@ -353,6 +370,10 @@ class Reversi:
         """
         f, l = self.now_board.get_reverses(stone, x, y)
 
+        # ゲーム中ではなかったら終了
+        if self.state != Reversi.State.IN_GAME:
+            return
+
         # 設置できないときは終了
         if not f:
             print(f"place failed! (stone={stone}, (x, y) = ({x}, {y}))")
@@ -380,3 +401,18 @@ class Reversi:
 
         new_board = Board(b)
         self.__board_histories.append(new_board)
+
+        # 空いているますがなかったら終了
+        if self.count(0) == 0: self.state = Reversi.State.FINISHED
+
+    def count(self, stone: int, num: int = -1) -> int:
+        """
+
+        Args:
+            stone: 石の種類
+            num: 盤面のインデックス
+
+        Returns: numの石の数
+
+        """
+        return self.get_board(num).count(stone)

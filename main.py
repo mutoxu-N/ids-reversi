@@ -61,7 +61,7 @@ def main_2():
 
 
 def main_3():
-    np.random.seed(20)
+    np.random.seed(30)
 
     b = default_board()
     r = Reversi(Board(b))
@@ -94,6 +94,7 @@ def main_3():
     for i in range(r.turns):
         r.print(num=i)
 
+    print(f"黒: {r.count(1)}, 白: {r.count(2)}")
 
 
 if __name__ == '__main__':
