@@ -31,7 +31,8 @@ class Board:
 
         # size check
         s = board.shape
-        if s[0] != s[1]: assert f"盤面が正方形ではありません。 size: {s}"
+        if s[0] != s[1]:
+            assert f"盤面が正方形ではありません。 size: {s}"
 
         self.__board = board
 
@@ -76,8 +77,7 @@ class Board:
             for x in range(self.size):
                 f = False
                 for d in range(8):
-                    l = self.__check_can_place(stone, x, y, d)
-                    if l > 0:
+                    if self.__check_can_place(stone, x, y, d) > 0:
                         f = True
                         break
 
@@ -104,14 +104,14 @@ class Board:
 
         return f, t
 
-    def __check_can_place(self, stone: int, x: int, y: int, dir: int) -> int:
+    def __check_can_place(self, stone: int, x: int, y: int, direction: int) -> int:
         """
 
         Args:
             stone: 設置される石の番号
             x: x座標
             y: y座標
-            dir:  0:N, 1:NE, 2:E, 3:SE, 4:S, 5:SW, 6:W, 7:NW を表す。
+            direction:  0:N, 1:NE, 2:E, 3:SE, 4:S, 5:SW, 6:W, 7:NW を表す。
 
         Returns: (x, y) に dir の方向 何マス設置できるか
 
@@ -120,11 +120,11 @@ class Board:
         if self.board[y][x] != 0: return 0
 
         # N
-        if dir == 0:
+        if direction == 0:
             if y < 2 or self.board[y - 1][x] in (0, stone): return 0
 
             i, j = x, y - 2
-            while (j >= 0):
+            while j >= 0:
                 if self.board[j][i] not in (0, stone):
                     j -= 1
                 else:
@@ -134,11 +134,11 @@ class Board:
             return y - j
 
         # NE
-        elif dir == 1:
+        elif direction == 1:
             if self.size - 3 < x or y < 2 or self.board[y - 1][x + 1] in (0, stone): return 0
 
             i, j = x + 2, y - 2
-            while (i < self.size and j >= 0):
+            while i < self.size and j >= 0:
                 if self.board[j][i] not in (0, stone):
                     i += 1
                     j -= 1
@@ -149,11 +149,11 @@ class Board:
             return i - x
 
         # E
-        elif dir == 2:
+        elif direction == 2:
             if self.size - 3 < x or self.board[y][x + 1] in (0, stone): return 0
 
             i, j = x + 1, y
-            while (i < self.size):
+            while i < self.size:
                 if self.board[j][i] not in (0, stone):
                     i += 1
                 else:
@@ -163,11 +163,11 @@ class Board:
             return i - x
 
         # SE
-        elif dir == 3:
+        elif direction == 3:
             if self.size - 3 < x or self.size - 3 < y or self.board[y + 1][x + 1] in (0, stone): return 0
 
             i, j = x + 2, y + 2
-            while (i < self.size and j < self.size):
+            while i < self.size and j < self.size:
                 if self.board[j][i] not in (0, stone):
                     i += 1
                     j += 1
@@ -178,11 +178,11 @@ class Board:
             return i - x
 
         # S
-        if dir == 4:
+        if direction == 4:
             if self.size - 3 < y or self.board[y + 1][x] in (0, stone): return 0
 
             i, j = x, y + 2
-            while (j < self.size):
+            while j < self.size:
                 if self.board[j][i] not in (0, stone):
                     j += 1
                 else:
@@ -192,11 +192,11 @@ class Board:
             return j - y
 
         # SW
-        elif dir == 5:
+        elif direction == 5:
             if x < 2 or self.size - 3 < y or self.board[y + 1][x - 1] in (0, stone): return 0
 
             i, j = x - 2, y + 2
-            while (0 <= i and j < self.size):
+            while 0 <= i and j < self.size:
                 if self.board[j][i] not in (0, stone):
                     i -= 1
                     j += 1
@@ -207,11 +207,11 @@ class Board:
             return x - i
 
         # W
-        if dir == 6:
+        if direction == 6:
             if x < 2 or self.board[y][x - 1] in (0, stone): return 0
 
             i, j = x - 2, y
-            while (i >= 0):
+            while i >= 0:
                 if self.board[j][i] not in (0, stone):
                     i -= 1
                 else:
@@ -221,11 +221,11 @@ class Board:
             return x - i
 
         # NW
-        elif dir == 7:
+        elif direction == 7:
             if x < 2 or y < 2 or self.board[y - 1][x - 1] in (0, stone): return 0
 
             i, j = x - 2, y - 2
-            while (0 <= i and 0 <= j):
+            while 0 <= i and 0 <= j:
                 if self.board[j][i] not in (0, stone):
                     i -= 1
                     j -= 1
@@ -265,9 +265,8 @@ class Reversi:
         """
 
         Args:
-            size: リバーシ盤面の一辺の大きさ
-            blacks: 黒の初期位置
-            whites: 白の初期位置
+            board: 初期の盤面
+
         """
 
         self.SIZE = board.size

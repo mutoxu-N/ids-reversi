@@ -1,6 +1,5 @@
 from reversi import Reversi, Board, default_board
 import numpy as np
-import random
 
 
 def main_1():
