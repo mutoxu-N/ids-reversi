@@ -66,13 +66,10 @@ def main_3(s):
     b = default_board()
     r = Reversi(Board(b))
 
-    black_pass = False
-    white_pass = False
     stone = 1
-    cnt = 0
     # r.print(stone)
 
-    while not (black_pass and white_pass):
+    while r.state == Reversi.State.IN_GAME:
 
         candidate = r.get_can_place(stone)
         # print(f"placeable: {candidate}")
@@ -91,11 +88,12 @@ def main_3(s):
         else: stone = 1
         # r.print(stone)
 
-    for i in range(r.turns):
-        r.print(num=i)
+    # for i in range(r.turns):
+    #     r.print(num=i)
 
+    r.print()
     print(f"黒: {r.count(1)}, 白: {r.count(2)}")
 
 
 if __name__ == '__main__':
-    main_3(15)
+    main_3(0)
