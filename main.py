@@ -60,5 +60,41 @@ def main_2():
     r.print(0)
 
 
+def main_3():
+    np.random.seed(20)
+
+    b = default_board()
+    r = Reversi(Board(b))
+
+    black_pass = False
+    white_pass = False
+    stone = 1
+    cnt = 0
+    # r.print(stone)
+
+    while not (black_pass and white_pass):
+
+        candidate = r.get_can_place(stone)
+        # print(f"placeable: {candidate}")
+
+        if len(candidate) == 0:
+            if stone == 1: black_pass = True
+            else: white_pass = True
+
+        else:
+            p = candidate[np.random.randint(len(candidate), size=1)[0]]
+            # print(f"place: {stone} at {p}")
+
+            r.place(stone, p[0], p[1])
+
+        if stone == 1: stone = 2
+        else: stone = 1
+        # r.print(stone)
+
+    for i in range(r.turns):
+        r.print(num=i)
+
+
+
 if __name__ == '__main__':
-    main_2()
+    main_3()

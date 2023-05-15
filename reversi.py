@@ -34,7 +34,7 @@ class Board:
         if s[0] != s[1]:
             assert f"盤面が正方形ではありません。 size: {s}"
 
-        self.__board = board
+        self.__board = board.copy()
 
     def __str__(self) -> str:
         r = ""
@@ -58,7 +58,7 @@ class Board:
         Returns: 盤面の状態の配列
 
         """
-        return self.__board
+        return self.__board.copy()
 
     def get_can_place(self, stone: int = 0) -> tuple:
         """
