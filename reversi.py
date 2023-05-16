@@ -324,6 +324,9 @@ class Reversi:
         self.playing = 1
         self.state: Reversi.State = Reversi.State.IN_GAME
 
+        # whether place failed
+        self.place_failed = np.full(3, False)
+
         # create new game
         self.__board_histories.append(board)
 
@@ -365,7 +368,15 @@ class Reversi:
         Returns:現在の盤面で設置できる座標群 例: ( (0, 0), (0, 1) )
 
         """
-        return self.now_board.get_can_place(stone)
+        t = self.now_board.get_can_place(stone)
+
+        if len(t) == 0:
+            self.place_failed[stone] = True
+
+        if np.count_nonzero(self.place_failed) == 2:
+            self.state = Reversi.State.FINISHED
+
+        return t
 
     def print(self, stone: int = 0, num: int = -1) -> None:
         """
@@ -419,6 +430,7 @@ class Reversi:
 
         new_board = Board(b)
         self.__board_histories.append(new_board)
+        self.place_failed = np.full(3, False)
 
         # 空いているますがなかったら終了
         if self.count(0) == 0: self.state = Reversi.State.FINISHED

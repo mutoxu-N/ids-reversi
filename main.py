@@ -62,10 +62,19 @@ def main_2():
 
 def main_3(s):
     np.random.seed(s)
-    r = Reversi(Board(default_board()))
+    # r = Reversi(Board(default_board()))
+    r = Reversi(Board(np.array([
+        # [0, 0, 0, 0],
+        # [0, 2, 1, 0],
+        # [0, 1, 2, 0],
+        # [0, 0, 0, 0],
+        [1, 1, 0],
+        [2, 1, 0],
+        [0, 0, 0],
+    ])))
 
     stone = 1
-    # r.print(stone)
+    r.print(stone)
 
     while r.state == Reversi.State.IN_GAME:
 
@@ -81,14 +90,14 @@ def main_3(s):
 
         if stone == 1: stone = 2
         else: stone = 1
-        # r.print(stone)
+        r.print(stone)
 
     # for i in range(r.turns):
-    #     r.print(num=i)
+    #     r.print(stone, num=i)
 
-    r.print()
+    # r.print()
     print(f"黒: {r.count(1)}, 白: {r.count(2)}")
 
 
 if __name__ == '__main__':
-    main_3(0)
+    main_3(14)
