@@ -95,6 +95,8 @@ def main_3(s):
     for i, c in enumerate(t):
         print(f"{i}: {c}")
 
+    print("win:", *r.top_stones())
+
 
 if __name__ == '__main__':
     # Reversi(Board(np.array([[1, 1, 0],[2, 1, 0],[2, 2, 0]]))).print()

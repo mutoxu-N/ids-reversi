@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 from enum import Enum
 import sys
@@ -109,7 +111,7 @@ class Board:
         """
         return np.count_nonzero(self.board == stone)
 
-    def get_can_place(self, stone: int = 0) -> tuple:
+    def get_can_place(self, stone: int = 0) -> tuple[tuple[int, int], ...]:
         """
 
         Args:
@@ -302,15 +304,6 @@ class Board:
                 if self.__board[y][x] == stone:
                     r[y][x] = 1
         return r
-
-    def top_stone(self) -> int:
-        """
-
-        Returns: 一番数が多い石の種類
-
-        """
-        if self.count(1) < self.count(2): return 2
-        else: return 1
 
 
 class Reversi:
@@ -509,3 +502,16 @@ class Reversi:
         self.__playing += 1
         if self.__playing > self.__STONE_SIZE: self.__playing = 1
         return self.__playing
+
+    def top_stones(self) -> tuple[int, ...]:
+        """
+
+        Returns: 一番数が多い石の種類
+
+        """
+        r = []
+        t = self.count_all()
+        m = max(t)
+        for i, c in enumerate(t):
+            if m == c: r.append(i)
+        return tuple(r)
