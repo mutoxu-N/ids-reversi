@@ -18,7 +18,7 @@ def main_1():
     r.print(1)
     print(r.now_board.get_stone_position(1))
     print(r.now_board.get_reverses(1, 2, 6))
-    r.place(1, 2, 6)
+    r.place(2, 6, 1)
     r.print(1)
     print(r.now_board.get_stone_position(1))
 
@@ -41,7 +41,7 @@ def main_2():
     p = candidate[idx]
     print(p)
 
-    r.place(stone, p[0], p[1])
+    r.place(p[0], p[1], stone)
 
     # white
     stone = 2
@@ -55,7 +55,7 @@ def main_2():
     p = candidate[idx]
     print(p)
 
-    r.place(stone, p[0], p[1])
+    r.place(p[0], p[1], stone)
 
     r.print(0)
 
@@ -64,40 +64,39 @@ def main_3(s):
     np.random.seed(s)
     # r = Reversi(Board(default_board()))
     r = Reversi(Board(np.array([
-        # [0, 0, 0, 0],
-        # [0, 2, 1, 0],
-        # [0, 1, 2, 0],
-        # [0, 0, 0, 0],
-        [1, 1, 0],
-        [2, 1, 0],
-        [0, 0, 0],
+        [0, 0, 0, 3],
+        [0, 2, 0, 0],
+        [0, 1, 2, 0],
+        [0, 0, 0, 0],
     ])))
 
-    stone = 1
-    r.print(stone)
+    r.print(r.playing)
 
     while r.state == Reversi.State.IN_GAME:
 
         # 置ける場所の候補
-        candidate = r.get_can_place(stone)
+        candidate = r.get_can_place(r.playing)
         # print(f"placeable: {candidate}")
 
         if len(candidate) > 0:
             p = candidate[np.random.randint(len(candidate), size=1)[0]]
             # print(f"place: {stone} at {p}")
+            r.place(p[0], p[1], r.playing)
 
-            r.place(stone, p[0], p[1])
-
-        if stone == 1: stone = 2
-        else: stone = 1
-        r.print(stone)
+        r.next_turn()
+        r.print(r.playing)
 
     # for i in range(r.turns):
     #     r.print(stone, num=i)
 
     # r.print()
-    print(f"黒: {r.count(1)}, 白: {r.count(2)}")
+    t = r.count_all()
+    print("result")
+    for i, c in enumerate(t):
+        print(f"{i}: {c}")
 
 
 if __name__ == '__main__':
-    main_3(14)
+    # Reversi(Board(np.array([[1, 1, 0],[2, 1, 0],[2, 2, 0]]))).print()
+    # main_3(0)
+    main_3(2)

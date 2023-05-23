@@ -1,5 +1,6 @@
 import numpy as np
 from enum import Enum
+import sys
 
 
 def default_board() -> np.ndarray:
@@ -22,7 +23,7 @@ class Board:
     盤面の情報
     """
 
-    def __init__(self, board: np.ndarray):
+    def __init__(self, board: np.ndarray, stone_size_=None):
         """
 
         Args:
@@ -36,6 +37,7 @@ class Board:
             assert f"盤面が正方形ではありません。 size: {s}"
         self.__size = s[0]
         self.__board = board.copy()
+        self.__STONE_SIZE = stone_size_ if stone_size_ else np.max(self.__board)
 
     def __str__(self) -> str:
         r = ""
@@ -61,28 +63,38 @@ class Board:
         """
         return self.__board.copy()
 
+    @property
+    def stone_size(self) -> int:
+        """
+
+        Returns:　石の種類数を取得
+
+        """
+        return self.__STONE_SIZE
+
     def print(self, stone: int = 0) -> None:
         """
 
         Args:
-            stone: stone がおける場所を赤く表示 (0 で非表示)
+            stone: stone がおける場所を赤く表示 (0 で非表示, stone >= 9 で正常に動作しない)
 
         """
+
+        if self.__STONE_SIZE > 8:
+            print("石の種類が9種類以上だと出力できません。")
+            return
+
         board: np.ndarray = self.__board
         c = self.get_can_place(stone)
 
-        r = ""
+        stones = ["🟩", "⚫", "⚪", "🔵", "🟡", "🟠", "🟣", "🟤", "🟢"]
+        r = "" if stone == 0 else f"put: {stone}\n"
         for y in range(self.size):
             for x in range(self.size):
                 if stone != 0 and (x, y) in c:
                     r += "🔴"
                 else:
-                    if board[y][x] == 1:
-                        r += "⚫"
-                    elif board[y][x] == 2:
-                        r += "⚪"
-                    else:
-                        r += "🟩"
+                    r += stones[board[y][x]]
             r += "\n"
         print(r)
 
@@ -319,13 +331,14 @@ class Reversi:
 
         """
 
-        self.SIZE = board.size
+        self.__SIZE = board.size
         self.__board_histories = []
-        self.playing = 1
-        self.state: Reversi.State = Reversi.State.IN_GAME
+        self.__playing = 1
+        self.__STONE_SIZE = board.stone_size
+        self.__state: Reversi.State = Reversi.State.IN_GAME
 
         # whether place failed
-        self.place_failed = np.full(3, False)
+        self.__place_failed = np.full(self.__STONE_SIZE, False)
 
         # create new game
         self.__board_histories.append(board)
@@ -340,6 +353,15 @@ class Reversi:
         return self.__board_histories[-1]
 
     @property
+    def state(self) -> State:
+        """
+
+        Returns: ゲームの現在の状態
+
+        """
+        return self.__state
+
+    @property
     def turns(self) -> int:
         """
 
@@ -347,6 +369,15 @@ class Reversi:
 
         """
         return len(self.__board_histories)
+
+    @property
+    def playing(self) -> int:
+        """
+
+        Returns: 現在のターンの石の種類を返す
+
+        """
+        return self.__playing
 
     def get_board(self, num: int = -1) -> Board:
         """
@@ -371,10 +402,10 @@ class Reversi:
         t = self.now_board.get_can_place(stone)
 
         if len(t) == 0:
-            self.place_failed[stone] = True
+            self.__place_failed[stone-1] = True
 
-        if np.count_nonzero(self.place_failed) == 2:
-            self.state = Reversi.State.FINISHED
+        if np.count_nonzero(self.__place_failed) == self.__STONE_SIZE:
+            self.__state = Reversi.State.FINISHED
 
         return t
 
@@ -388,13 +419,13 @@ class Reversi:
         """
         self.__board_histories[num].print(stone)
 
-    def place(self, stone, x, y) -> None:
+    def place(self, x, y, stone) -> None:
         """
 
         Args:
-            stone: 設置する石の種類
             x: X座標
             y: Y座標
+            stone: 設置する石の種類
 
         """
         f, l = self.now_board.get_reverses(stone, x, y)
@@ -405,8 +436,8 @@ class Reversi:
 
         # 設置できないときは終了
         if not f:
-            print(f"place failed! (stone={stone}, (x, y) = ({x}, {y}))")
-            return
+            print(f"Place failed (stone={stone}, (x, y) = ({x}, {y}))", file=sys.stderr)
+            sys.exit(1)
 
         b: np.ndarray = self.now_board.board
 
@@ -428,12 +459,9 @@ class Reversi:
         for i in range(1, l[7]):  # NW
             b[y - i][x - i] = stone
 
-        new_board = Board(b)
+        new_board = Board(b, self.__STONE_SIZE)
         self.__board_histories.append(new_board)
-        self.place_failed = np.full(3, False)
-
-        # 空いているますがなかったら終了
-        if self.count(0) == 0: self.state = Reversi.State.FINISHED
+        self.__place_failed = np.full(self.__STONE_SIZE, False)
 
     def count(self, stone: int, num: int = -1) -> int:
         """
@@ -447,6 +475,21 @@ class Reversi:
         """
         return self.get_board(num).count(stone)
 
+    def count_all(self, num: int = -1) -> tuple:
+        """
+
+        Args:
+            num: 盤面のインデックス
+
+        Returns: それぞれの石の数
+
+        """
+        r = []
+        board: Board = self.get_board(num)
+        for i in range(self.__STONE_SIZE+1):
+            r.append(board.count(i))
+        return tuple(r)
+
     def result(self) -> tuple:
         """
 
@@ -454,5 +497,15 @@ class Reversi:
 
         """
         if self.state != Reversi.State.FINISHED: return False, None
-
         return True,
+
+    def next_turn(self) -> int:
+        """
+        次のターンに進める
+
+        Returns: 現在の石の種類
+
+        """
+        self.__playing += 1
+        if self.__playing > self.__STONE_SIZE: self.__playing = 1
+        return self.__playing
