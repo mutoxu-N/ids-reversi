@@ -3,6 +3,10 @@ import numpy as np
 
 
 def main_1():
+    """
+    canPlace 確認
+    """
+
     b = np.array([
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -12,7 +16,7 @@ def main_1():
         [0, 0, 2, 2, 2, 2, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
-    ])
+    ], dtype=np.int8)
 
     r = Reversi(Board(b))
     r.print(1)
@@ -24,50 +28,54 @@ def main_1():
 
 
 def main_2():
-    np.random.seed(20)
+    """
+    normal game
+    """
+    # np.random.seed(0)
 
     b = default_board()
     r = Reversi(Board(b))
 
-    # black
-    stone = 1
-    r.print(stone)
-    candidate = r.get_can_place(stone)
-    print(candidate)
+    # r.print(r.playing)
+    while r.state == Reversi.State.IN_GAME:
 
-    idx = np.random.randint(len(candidate), size=1)[0]
-    print(idx)
+        # 置ける場所の候補
+        candidate = r.get_can_place(r.playing)
+        # print(f"placeable: {candidate}")
 
-    p = candidate[idx]
-    print(p)
+        if len(candidate) > 0:
+            p = candidate[np.random.randint(len(candidate), size=1)[0]]
+            # print(f"place: {stone} at {p}")
+            r.place(p[0], p[1], r.playing)
 
-    r.place(p[0], p[1], stone)
+        r.next_turn()
+        # r.print(r.playing)
 
-    # white
-    stone = 2
-    r.print(stone)
-    candidate = r.get_can_place(stone)
-    print(candidate)
+    r.print()
+    t = r.count_all()
+    print("result")
+    for i, c in enumerate(t):
+        print(f"{i}: {c}")
 
-    idx = np.random.randint(len(candidate), size=1)[0]
-    print(idx)
-
-    p = candidate[idx]
-    print(p)
-
-    r.place(p[0], p[1], stone)
-
-    r.print(0)
+    print("win:", *r.top_stones())
 
 
 def main_3(s):
+    """
+    4x4 P4
+    Args:
+        s:
+
+    Returns:
+
+    """
     np.random.seed(s)
     # r = Reversi(Board(default_board()))
     r = Reversi(Board(np.array([
-        [0, 0, 0, 3],
-        [0, 2, 0, 0],
+        [3, 0, 0, 0],
+        [0, 2, 1, 0],
         [0, 1, 2, 0],
-        [0, 0, 0, 0],
+        [4, 0, 0, 4],
     ])))
 
     r.print(r.playing)
@@ -101,4 +109,4 @@ def main_3(s):
 if __name__ == '__main__':
     # Reversi(Board(np.array([[1, 1, 0],[2, 1, 0],[2, 2, 0]]))).print()
     # main_3(0)
-    main_3(2)
+    main_2()

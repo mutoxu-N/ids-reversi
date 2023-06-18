@@ -11,7 +11,7 @@ def default_board() -> np.ndarray:
     Returns: デフォルトの盤面配列
 
     """
-    board: np.ndarray = np.zeros((8, 8))
+    board: np.ndarray = np.zeros((8, 8), dtype=np.int8)
     board[3][3] = 2
     board[3][4] = 1
     board[4][3] = 1
@@ -38,8 +38,8 @@ class Board:
         if s[0] != s[1]:
             assert f"盤面が正方形ではありません。 size: {s}"
         self.__size = s[0]
-        self.__board = board.copy()
-        self.__STONE_SIZE = stone_size_ if stone_size_ else np.max(self.__board)
+        self.__board = board.astype(np.int8)
+        self.__STONE_SIZE = int(stone_size_ if stone_size_ else np.max(self.__board))
 
     def __str__(self) -> str:
         r = ""
@@ -383,7 +383,7 @@ class Reversi:
         """
         return self.__board_histories[num]
 
-    def get_can_place(self, stone: int = 0) -> tuple:
+    def get_can_place(self, stone: int = 0) -> tuple[tuple[int, int], ...]:
         """
 
         Args:
@@ -468,7 +468,7 @@ class Reversi:
         """
         return self.get_board(num).count(stone)
 
-    def count_all(self, num: int = -1) -> tuple:
+    def count_all(self, num: int = -1) -> tuple[int, ...]:
         """
 
         Args:
@@ -482,15 +482,6 @@ class Reversi:
         for i in range(self.__STONE_SIZE+1):
             r.append(board.count(i))
         return tuple(r)
-
-    def result(self) -> tuple:
-        """
-
-        Returns: 対戦結果 (ゲームが終了したか, 勝った石)
-
-        """
-        if self.state != Reversi.State.FINISHED: return False, None
-        return True,
 
     def next_turn(self) -> int:
         """
@@ -515,3 +506,23 @@ class Reversi:
         for i, c in enumerate(t):
             if m == c: r.append(i)
         return tuple(r)
+
+    def auto_play(self) -> tuple[int, ...]:
+        """
+        現在の状態から終了までランダムプレイ
+
+        Returns: 勝利した石の種類
+
+        """
+        while self.state == Reversi.State.IN_GAME:
+
+            # 置ける場所の候補
+            candidate = self.get_can_place(self.playing)
+
+            if len(candidate) > 0:
+                p = candidate[np.random.randint(len(candidate), size=1)[0]]
+                self.place(p[0], p[1], self.playing)
+
+            self.next_turn()
+
+        return self.top_stones()
