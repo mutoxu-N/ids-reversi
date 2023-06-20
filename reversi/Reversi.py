@@ -1,23 +1,6 @@
-from typing import Tuple
-
 import numpy as np
 from enum import Enum
 import sys
-
-
-def default_board() -> np.ndarray:
-    """
-
-    Returns: デフォルトの盤面配列
-
-    """
-    board: np.ndarray = np.zeros((8, 8), dtype=np.int8)
-    board[3][3] = 2
-    board[3][4] = 1
-    board[4][3] = 1
-    board[4][4] = 2
-
-    return board
 
 
 class Board:
@@ -306,6 +289,21 @@ class Board:
         return r
 
 
+def default_board() -> Board:
+    """
+
+    Returns: デフォルトの盤面配列
+
+    """
+    board: np.ndarray = np.zeros((8, 8), dtype=np.int8)
+    board[3][3] = 2
+    board[3][4] = 1
+    board[4][3] = 1
+    board[4][4] = 2
+
+    return Board(board)
+
+
 class Reversi:
     """
     リバーシ用インターフェース
@@ -316,7 +314,7 @@ class Reversi:
         IN_GAME = 0
         FINISHED = 1
 
-    def __init__(self, board: Board = default_board()):
+    def __init__(self, board: Board = default_board(), player: np.int8 = None):
         """
 
         Args:
@@ -324,9 +322,10 @@ class Reversi:
 
         """
 
+        # init
         self.__SIZE = board.size
         self.__board_histories = []
-        self.__playing = 1
+        self.__playing = 1 if player is None else player
         self.__STONE_SIZE = board.stone_size
         self.__state: Reversi.State = Reversi.State.IN_GAME
 

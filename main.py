@@ -1,4 +1,4 @@
-from reversi import Reversi, Board, default_board
+from reversi.Reversi import default_board, Reversi, Board
 import numpy as np
 
 
