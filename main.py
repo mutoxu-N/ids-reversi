@@ -108,9 +108,27 @@ def main_3(s):
 
 def main_4():
     game = Reversi(default_board())
-    mc = MonteCalro(game.now_board, game.playing, 10)
-    mc.run()
-    print("result", mc.result)
+    while game.state == Reversi.State.IN_GAME:
+        # player
+        game.print(game.playing)
+        candidates = game.get_can_place(game.playing)
+        print("candidates: ", *candidates)
+        x, y = map(int, input("place: ").split())
+        game.place((x, y))
+        game.next_turn()
+
+        # machine
+        game.print()
+        mc = MonteCalro(game.now_board, game.playing, 10)
+        mc.run()
+        result = mc.result
+        print("result", result)
+        recommend = mc.recommend
+        print("recommend", recommend)
+        place = mc.candidates[np.random.choice(recommend)]
+        print("place", place)
+        game.place(place)
+        game.next_turn()
 
 
 if __name__ == '__main__':

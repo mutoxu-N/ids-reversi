@@ -411,7 +411,7 @@ class Reversi:
         """
         self.__board_histories[num].print(stone)
 
-    def place(self, pos: tuple[int, int], stone: np.int8) -> None:
+    def place(self, pos: tuple[int, int], stone: np.int8|None=None) -> None:
         """
 
         Args:
@@ -420,7 +420,10 @@ class Reversi:
 
         """
         x, y = pos
+        if stone is None: stone = self.playing
+
         f, l = self.now_board.get_reverses(stone, x, y)
+
 
         # ゲーム中ではなかったら終了
         if self.state != Reversi.State.IN_GAME:

@@ -12,10 +12,19 @@ class MonteCalro:
         self.__wins = np.full(board.board.shape, 0, dtype=np.int8)
         self.__count = count
         self.__result = None
+        self.__recommend = None
 
     @property
     def result(self):
         return tuple(self.__result)
+
+    @property
+    def recommend(self):
+        return tuple(self.__recommend)
+
+    @property
+    def candidates(self):
+        return tuple(self.__candidates)
 
     def run(self) -> tuple:
         cnt = np.full(len(self.__candidates), 0, dtype=np.int32)
@@ -27,8 +36,11 @@ class MonteCalro:
 
                 if result: cnt[i] += 1
                 j += 1
+
         self.__result = cnt / self.__count
-        return self.result
+        self.__recommend = np.where(cnt == cnt.max())[0]
+
+        return self.result, self.recommend
 
     def __play(self, from_: tuple[int, int]) -> bool | None:
         game = Reversi(self.__init_board, self.__player)
