@@ -81,7 +81,7 @@ class Board:
                 else:
                     r += stones[board[y][x]]
             r += "\n"
-        print(r)
+        print(r, end="")
 
     def count(self, stone: int):
         """
@@ -363,7 +363,7 @@ class Reversi:
         return len(self.__board_histories)
 
     @property
-    def playing(self) -> int:
+    def playing(self) -> np.int8:
         """
 
         Returns: 現在のターンの石の種類を返す
@@ -411,15 +411,15 @@ class Reversi:
         """
         self.__board_histories[num].print(stone)
 
-    def place(self, x, y, stone) -> None:
+    def place(self, pos: tuple[int, int], stone: np.int8) -> None:
         """
 
         Args:
-            x: X座標
-            y: Y座標
+            pos: 設置する位置 (x, y)
             stone: 設置する石の種類
 
         """
+        x, y = pos
         f, l = self.now_board.get_reverses(stone, x, y)
 
         # ゲーム中ではなかったら終了
@@ -501,7 +501,7 @@ class Reversi:
         """
         r = []
         t = self.count_all()
-        m = max(t)
+        m = max(t[1:])
         for i, c in enumerate(t):
             if m == c: r.append(i)
         return tuple(r)
@@ -516,11 +516,11 @@ class Reversi:
         while self.state == Reversi.State.IN_GAME:
 
             # 置ける場所の候補
-            candidate = self.get_can_place(self.playing)
+            candidates = self.get_can_place(self.playing)
 
-            if len(candidate) > 0:
-                p = candidate[np.random.randint(len(candidate), size=1)[0]]
-                self.place(p[0], p[1], self.playing)
+            if len(candidates) > 0:
+                p = candidates[np.random.randint(len(candidates), size=1)[0]]
+                self.place((p[0], p[1]), self.playing)
 
             self.next_turn()
 

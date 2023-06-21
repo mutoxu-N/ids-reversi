@@ -1,6 +1,6 @@
 from reversi.Reversi import default_board, Reversi, Board
+from reversi.methods.MonteCalro import MonteCalro
 import numpy as np
-
 
 def main_1():
     """
@@ -22,7 +22,7 @@ def main_1():
     r.print(1)
     print(r.now_board.get_stone_position(1))
     print(r.now_board.get_reverses(1, 2, 6))
-    r.place(2, 6, 1)
+    r.place((2, 6), 1)
     r.print(1)
     print(r.now_board.get_stone_position(1))
 
@@ -46,7 +46,7 @@ def main_2():
         if len(candidate) > 0:
             p = candidate[np.random.randint(len(candidate), size=1)[0]]
             # print(f"place: {stone} at {p}")
-            r.place(p[0], p[1], r.playing)
+            r.place((p[0], p[1]), r.playing)
 
         r.next_turn()
         # r.print(r.playing)
@@ -89,7 +89,7 @@ def main_3(s):
         if len(candidate) > 0:
             p = candidate[np.random.randint(len(candidate), size=1)[0]]
             # print(f"place: {stone} at {p}")
-            r.place(p[0], p[1], r.playing)
+            r.place((p[0], p[1]), r.playing)
 
         r.next_turn()
         r.print(r.playing)
@@ -106,7 +106,14 @@ def main_3(s):
     print("win:", *r.top_stones())
 
 
+def main_4():
+    game = Reversi(default_board())
+    mc = MonteCalro(game.now_board, game.playing, 10)
+    mc.run()
+    print("result", mc.result)
+
+
 if __name__ == '__main__':
     # Reversi(Board(np.array([[1, 1, 0],[2, 1, 0],[2, 2, 0]]))).print()
     # main_3(0)
-    main_2()
+    main_4()
